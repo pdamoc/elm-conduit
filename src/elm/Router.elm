@@ -26,7 +26,7 @@ toUrl page =
         Error loc ->
             "error"
     )
-        |> (++) "/#/"
+        |> (++) "#/"
 
 
 userLink : User -> String
