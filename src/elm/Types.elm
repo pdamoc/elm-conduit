@@ -1,11 +1,85 @@
 module Types exposing (..)
 
 import Navigation exposing (Location)
+import Json.Decode exposing (..)
+import Json.Decode.Pipeline exposing (decode, required)
+import Json.Encode as JE
+import Utils
 
 
+{-| SiteMap
+-}
 type Page
     = Home
+    | Login
+    | Register
+    | Editor
+    | Settings
     | Error Location
+
+
+{-| The Main Model
+-}
+type alias Model =
+    { currentPage : Page
+    , context : Context
+    }
+
+
+type alias Context =
+    { user : Maybe User }
+
+
+contextDecoder : Decoder Context
+contextDecoder =
+    decode Context
+        |> required "user" (maybe userDecoder)
+
+
+parseContext : Maybe Value -> Context
+parseContext value =
+    case value of
+        Nothing ->
+            (Context Nothing)
+
+        Just val ->
+            decodeValue contextDecoder val
+                |> Result.withDefault (Context Nothing)
+
+
+contextEncoder : Context -> Value
+contextEncoder context =
+    JE.object [ ( "user", Utils.maybe userEncoder context.user ) ]
+
+
+type alias User =
+    { email : String
+    , token : String
+    , username : String
+    , bio : String
+    , image : Maybe String
+    }
+
+
+userDecoder : Decoder User
+userDecoder =
+    decode User
+        |> required "email" string
+        |> required "token" string
+        |> required "username" string
+        |> required "bio" string
+        |> required "image" (maybe string)
+
+
+userEncoder : User -> Value
+userEncoder user =
+    JE.object
+        [ ( "email", JE.string user.email )
+        , ( "token", JE.string user.token )
+        , ( "username", JE.string user.username )
+        , ( "bio", JE.string user.bio )
+        , ( "image", Utils.maybe JE.string user.image )
+        ]
 
 
 type alias Profile =

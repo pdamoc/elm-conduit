@@ -11,16 +11,37 @@ toUrl page =
         Home ->
             ""
 
+        Register ->
+            "register"
+
+        Login ->
+            "login"
+
+        Editor ->
+            "editor"
+
+        Settings ->
+            "settings"
+
         Error loc ->
             "error"
     )
         |> (++) "/#/"
 
 
+userLink : User -> String
+userLink user =
+    ("#/@" ++ user.username)
+
+
 route : Url.Parser (Page -> a) a
 route =
     Url.oneOf
         [ Url.map Home top
+        , Url.map Login (s "login")
+        , Url.map Register (s "register")
+        , Url.map Editor (s "editor")
+        , Url.map Settings (s "settings")
         ]
 
 

@@ -5,4 +5,17 @@ require( './styles/main.scss' );
 
 // inject bundled Elm app into div#main
 var Elm = require( '../elm/Main' );
-Elm.Main.embed( document.getElementById( 'main' ) );
+var mainNode = document.getElementById( 'main' );
+var storedContext = localStorage.getItem('elm-conduit-context');
+var context = storedContext ? storedContext : null;
+var app = Elm.Main.embed(mainNode, context);
+
+app.ports.updateContextValue.subscribe(function(context) {
+    localStorage.setItem('elm-conduit-context', context);
+});
+
+addEvent(window, 'storage', function (event) {
+  if (event.key == 'elm-conduit-context') {
+    app.ports.contextUpdates.send(event.newValue); 
+  }
+});

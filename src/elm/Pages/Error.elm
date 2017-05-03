@@ -1,8 +1,9 @@
 module Pages.Error exposing (..)
 
 import Html exposing (..)
+import Types exposing (Context, Model)
 
 
-view : String -> Html msg
-view err =
+view : Model -> String -> Html msg
+view model err =
     text err

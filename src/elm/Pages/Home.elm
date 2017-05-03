@@ -4,12 +4,13 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Components exposing (..)
 import Types exposing (..)
+import Router exposing (toUrl, userLink)
 
 
-view : Html msg
-view =
+view : Model -> Html msg
+view model =
     div []
-        [ navBar
+        [ navBar model
         , homePage
         , footer_
         ]
@@ -19,7 +20,7 @@ articlePreview : Article -> Html msg
 articlePreview article =
     div [ class "article-preview" ]
         [ div [ class "article-meta" ]
-            [ a [ href "#/" ]
+            [ a [ href (toUrl Home) ]
                 [ img [ src article.author.image ]
                     []
                 ]
