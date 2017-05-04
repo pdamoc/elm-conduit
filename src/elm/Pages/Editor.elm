@@ -17,14 +17,10 @@ view model =
 
 editorPage : Html msg
 editorPage =
-    div
-        [ class "editor-page" ]
-        [ div
-            [ class "container page" ]
-            [ div
-                [ class "row" ]
-                [ div
-                    [ class "col-md-10 offset-md-1 col-xs-12" ]
+    box "editor-page"
+        [ box "container page"
+            [ row
+                [ box "col-md-10 offset-md-1 col-xs-12"
                     [ Html.form
                         []
                         [ fieldset
@@ -49,10 +45,9 @@ editorPage =
                             [ class "form-group" ]
                             [ input
                                 [ type_ "text", class "form-control", placeholder "Enter tags" ]
-                                [ div
-                                    [ class "tag-list" ]
-                                    []
-                                ]
+                                []
+                            , box "tag-list"
+                                []
                             ]
                         , button
                             [ class "btn btn-lg pull-xs-right btn-primary", type_ "button" ]

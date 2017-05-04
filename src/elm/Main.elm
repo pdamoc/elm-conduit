@@ -15,8 +15,7 @@ import Json.Decode exposing (Value)
 
 import Types exposing (..)
 import Router exposing (toUrl)
-import Api
-import Ports
+import Store
 
 
 -- PAGES
@@ -32,7 +31,7 @@ import Pages.Error
 -- APP
 
 
-main : Program (Maybe Value) Model Msg
+main : Program Value Model Msg
 main =
     Navigation.programWithFlags UrlChange
         { init = init
@@ -46,15 +45,15 @@ main =
 -- MODEL
 
 
-init : Maybe Value -> Location -> ( Model, Cmd Msg )
-init rawContext location =
+init : Value -> Location -> ( Model, Cmd Msg )
+init userValue location =
     let
         initModel =
             { currentPage = (Router.parse location)
-            , context = parseContext rawContext
+            , store = Store.init userValue
             }
     in
-        ( initModel, Api.loadPage initModel.currentPage )
+        ( initModel, Store.loadPage UpdateStore initModel.currentPage )
 
 
 
@@ -63,7 +62,7 @@ init rawContext location =
 
 type Msg
     = UrlChange Location
-    | ContextUpdated Context
+    | UpdateStore Store.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -74,10 +73,10 @@ update msg model =
                 page =
                     Router.parse location
             in
-                ( { model | currentPage = page }, Api.loadPage page )
+                ( { model | currentPage = page }, Store.loadPage UpdateStore page )
 
-        ContextUpdated context ->
-            ( { model | context = context }, Cmd.none )
+        UpdateStore storeMsg ->
+            ( { model | store = Store.update storeMsg model.store }, Cmd.none )
 
 
 
@@ -112,4 +111,4 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Ports.contextSubscription ContextUpdated
+    Store.subscription UpdateStore

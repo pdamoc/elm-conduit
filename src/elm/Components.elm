@@ -12,7 +12,7 @@ avatarImageSrc =
 
 
 navBar : Model -> Html msg
-navBar { context, currentPage } =
+navBar { store, currentPage } =
     let
         navLinkClass page =
             if page == currentPage then
@@ -30,7 +30,7 @@ navBar { context, currentPage } =
                 ]
 
         links =
-            case context.user of
+            case store.user of
                 Nothing ->
                     [ headerLink Home "Home" Nothing
                     , headerLink Login "Sign In " Nothing
@@ -86,3 +86,13 @@ tagList tags =
     in
         div [ class "tag-list" ]
             (List.map toTag tags)
+
+
+box : String -> List (Html msg) -> Html msg
+box className =
+    div [ class className ]
+
+
+row : List (Html msg) -> Html msg
+row =
+    box "row"

@@ -5,26 +5,27 @@ import Html.Attributes exposing (..)
 import Components exposing (..)
 import Types exposing (..)
 import Router exposing (toUrl, userLink)
+import Store
 
 
 view : Model -> Html msg
 view model =
     div []
         [ navBar model
-        , homePage
+        , homePage model.store
         , footer_
         ]
 
 
 articlePreview : Article -> Html msg
 articlePreview article =
-    div [ class "article-preview" ]
-        [ div [ class "article-meta" ]
+    box "article-preview"
+        [ box "article-meta"
             [ a [ href (toUrl Home) ]
                 [ img [ src article.author.image ]
                     []
                 ]
-            , div [ class "info" ]
+            , box "info"
                 [ a [ class "author", href "" ]
                     [ text article.author.username ]
                 , span [ class "date" ]
@@ -50,42 +51,46 @@ articlePreview article =
         ]
 
 
-homePage : Html msg
-homePage =
-    div [ class "home-page" ]
-        [ div [ class "banner" ]
-            [ div [ class "container" ]
-                [ h1 [ class "logo-font" ]
-                    [ text "conduit" ]
-                , p []
-                    [ text "A place to share your knowledge." ]
+homePage : Store -> Html msg
+homePage store =
+    let
+        tags =
+            tagList (Store.tagsOrEmptyList store)
+    in
+        box "home-page"
+            [ box "banner"
+                [ box "container"
+                    [ h1 [ class "logo-font" ]
+                        [ text "conduit" ]
+                    , p []
+                        [ text "A place to share your knowledge." ]
+                    ]
                 ]
-            ]
-        , div [ class "container page" ]
-            [ div [ class "row" ]
-                [ div [ class "col-md-9" ]
-                    [ div [ class "feed-toggle" ]
-                        [ ul [ class "nav nav-pills outline-active" ]
-                            [ li [ class "nav-item" ]
-                                [ a [ class "nav-link disabled", href "" ]
-                                    [ text "Your Feed" ]
-                                ]
-                            , li [ class "nav-item" ]
-                                [ a [ class "nav-link active", href "" ]
-                                    [ text "Global Feed" ]
+            , box "container page"
+                [ row
+                    [ box "col-md-9"
+                        [ box "feed-toggle"
+                            [ ul [ class "nav nav-pills outline-active" ]
+                                [ li [ class "nav-item" ]
+                                    [ a [ class "nav-link disabled", href "" ]
+                                        [ text "Your Feed" ]
+                                    ]
+                                , li [ class "nav-item" ]
+                                    [ a [ class "nav-link active", href "" ]
+                                        [ text "Global Feed" ]
+                                    ]
                                 ]
                             ]
+                        , articlePreview articleSample
+                        , articlePreview articleSample2
                         ]
-                    , articlePreview articleSample
-                    , articlePreview articleSample2
-                    ]
-                , div [ class "col-md-3" ]
-                    [ div [ class "sidebar" ]
-                        [ p []
-                            [ text "Popular Tags" ]
-                        , tagList [ "programming", "elm", "real-world", "react", "web", "morty" ]
+                    , box "col-md-3"
+                        [ box "sidebar"
+                            [ p []
+                                [ text "Popular Tags" ]
+                            , tags
+                            ]
                         ]
                     ]
                 ]
             ]
-        ]

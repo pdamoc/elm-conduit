@@ -5,6 +5,7 @@ import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as JE
 import Utils
+import RemoteData exposing (WebData)
 
 
 {-| SiteMap
@@ -22,34 +23,14 @@ type Page
 -}
 type alias Model =
     { currentPage : Page
-    , context : Context
+    , store : Store
     }
 
 
-type alias Context =
-    { user : Maybe User }
-
-
-contextDecoder : Decoder Context
-contextDecoder =
-    decode Context
-        |> required "user" (maybe userDecoder)
-
-
-parseContext : Maybe Value -> Context
-parseContext value =
-    case value of
-        Nothing ->
-            (Context Nothing)
-
-        Just val ->
-            decodeValue contextDecoder val
-                |> Result.withDefault (Context Nothing)
-
-
-contextEncoder : Context -> Value
-contextEncoder context =
-    JE.object [ ( "user", Utils.maybe userEncoder context.user ) ]
+type alias Store =
+    { user : Maybe User
+    , tags : WebData (List String)
+    }
 
 
 type alias User =
@@ -69,6 +50,12 @@ userDecoder =
         |> required "username" string
         |> required "bio" string
         |> required "image" (maybe string)
+
+
+parseUser : Value -> Maybe User
+parseUser value =
+    decodeValue userDecoder value
+        |> Result.toMaybe
 
 
 userEncoder : User -> Value

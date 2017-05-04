@@ -1,7 +1,7 @@
 module Pages.Error exposing (..)
 
 import Html exposing (..)
-import Types exposing (Context, Model)
+import Types exposing (Model)
 
 
 view : Model -> String -> Html msg
