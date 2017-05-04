@@ -6,6 +6,7 @@ import Components exposing (..)
 import Types exposing (..)
 import Router exposing (toUrl, userLink)
 import Store
+import RemoteData exposing (..)
 
 
 view : Model -> Html msg
@@ -53,44 +54,40 @@ articlePreview article =
 
 homePage : Store -> Html msg
 homePage store =
-    let
-        tags =
-            tagList (Store.tagsOrEmptyList store)
-    in
-        box "home-page"
-            [ box "banner"
-                [ box "container"
-                    [ h1 [ class "logo-font" ]
-                        [ text "conduit" ]
-                    , p []
-                        [ text "A place to share your knowledge." ]
-                    ]
+    box "home-page"
+        [ box "banner"
+            [ box "container"
+                [ h1 [ class "logo-font" ]
+                    [ text "conduit" ]
+                , p []
+                    [ text "A place to share your knowledge." ]
                 ]
-            , box "container page"
-                [ row
-                    [ box "col-md-9"
-                        [ box "feed-toggle"
-                            [ ul [ class "nav nav-pills outline-active" ]
-                                [ li [ class "nav-item" ]
-                                    [ a [ class "nav-link disabled", href "" ]
-                                        [ text "Your Feed" ]
-                                    ]
-                                , li [ class "nav-item" ]
-                                    [ a [ class "nav-link active", href "" ]
-                                        [ text "Global Feed" ]
-                                    ]
+            ]
+        , box "container page"
+            [ row
+                [ box "col-md-9"
+                    [ box "feed-toggle"
+                        [ ul [ class "nav nav-pills outline-active" ]
+                            [ li [ class "nav-item" ]
+                                [ a [ class "nav-link disabled", href "" ]
+                                    [ text "Your Feed" ]
+                                ]
+                            , li [ class "nav-item" ]
+                                [ a [ class "nav-link active", href "" ]
+                                    [ text "Global Feed" ]
                                 ]
                             ]
-                        , articlePreview articleSample
-                        , articlePreview articleSample2
                         ]
-                    , box "col-md-3"
-                        [ box "sidebar"
-                            [ p []
-                                [ text "Popular Tags" ]
-                            , tags
-                            ]
+                    , articlePreview articleSample
+                    , articlePreview articleSample2
+                    ]
+                , box "col-md-3"
+                    [ box "sidebar"
+                        [ p []
+                            [ text "Popular Tags" ]
+                        , tagList store.tags
                         ]
                     ]
                 ]
             ]
+        ]

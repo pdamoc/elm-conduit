@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Types exposing (..)
 import Router exposing (toUrl, userLink)
+import RemoteData exposing (..)
 
 
 avatarImageSrc : Maybe String -> Attribute msg
@@ -77,15 +78,29 @@ outlineTag tag =
         [ text tag ]
 
 
-tagList : List String -> Html msg
-tagList tags =
+tagList : WebData (List String) -> Html msg
+tagList webtags =
     let
         toTag tag =
             a [ class "tag-pill tag-default", href "" ]
                 [ text tag ]
     in
-        div [ class "tag-list" ]
-            (List.map toTag tags)
+        case webtags of
+            NotAsked ->
+                div [ class "tag-list" ]
+                    [ text "Loading..." ]
+
+            Loading ->
+                div [ class "tag-list" ]
+                    [ text "Loading..." ]
+
+            Success tags ->
+                div [ class "tag-list" ]
+                    (List.map toTag tags)
+
+            Failure _ ->
+                div [ class "tag-list" ]
+                    [ text "There was an error retreiving the tags. Please reload the page." ]
 
 
 box : String -> List (Html msg) -> Html msg

@@ -48,12 +48,18 @@ main =
 init : Value -> Location -> ( Model, Cmd Msg )
 init userValue location =
     let
+        currentPage =
+            (Router.parse location)
+
+        ( initStore, cmds ) =
+            Store.loadPage UpdateStore currentPage (Store.init userValue)
+
         initModel =
-            { currentPage = (Router.parse location)
-            , store = Store.init userValue
+            { currentPage = currentPage
+            , store = initStore
             }
     in
-        ( initModel, Store.loadPage UpdateStore initModel.currentPage )
+        ( initModel, cmds )
 
 
 
@@ -72,8 +78,11 @@ update msg model =
             let
                 page =
                     Router.parse location
+
+                ( newStore, cmds ) =
+                    Store.loadPage UpdateStore page model.store
             in
-                ( { model | currentPage = page }, Store.loadPage UpdateStore page )
+                ( { model | currentPage = page, store = newStore }, cmds )
 
         UpdateStore storeMsg ->
             ( { model | store = Store.update storeMsg model.store }, Cmd.none )

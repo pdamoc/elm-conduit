@@ -44,24 +44,21 @@ tagsDecoder =
     field "tags" (list string)
 
 
-getTags : Cmd Msg
-getTags =
-    get (api "/tags") HandleTags tagsDecoder
+getTags : (Msg -> msg) -> Store -> ( Store, Cmd msg )
+getTags tagger store =
+    ( { store | tags = Loading }
+    , get (api "/tags") (tagger << HandleTags) tagsDecoder
+    )
 
 
-tagsOrEmptyList : Store -> List String
-tagsOrEmptyList store =
-    RemoteData.withDefault [] store.tags
-
-
-loadPage : (Msg -> msg) -> Page -> Cmd msg
-loadPage tagger page =
+loadPage : (Msg -> msg) -> Page -> Store -> ( Store, Cmd msg )
+loadPage tagger page store =
     case page of
         Home ->
-            Cmd.map tagger getTags
+            getTags tagger store
 
         _ ->
-            Cmd.none
+            ( store, Cmd.none )
 
 
 
