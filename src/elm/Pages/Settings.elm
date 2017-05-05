@@ -4,13 +4,12 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Components exposing (..)
 import Types exposing (..)
-import Router exposing (toUrl, userLink)
 
 
-view : Model -> Html msg
-view model =
+view : { c | store : Store, currentPage : Page } -> Html msg
+view cfg =
     div []
-        [ navBar model
+        [ navBar cfg
         , settingsPage
         , footer_
         ]

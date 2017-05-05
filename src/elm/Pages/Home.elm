@@ -2,18 +2,20 @@ module Pages.Home exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+
+
+-- MY MODULES
+
 import Components exposing (..)
 import Types exposing (..)
 import Router exposing (toUrl, userLink)
-import Store
-import RemoteData exposing (..)
 
 
-view : Model -> Html msg
-view model =
+view : { c | store : Store, currentPage : Page } -> Html msg
+view props =
     div []
-        [ navBar model
-        , homePage model.store
+        [ navBar props
+        , homePage props.store
         , footer_
         ]
 

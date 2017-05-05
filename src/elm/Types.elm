@@ -19,17 +19,10 @@ type Page
     | Error Location
 
 
-{-| The Main Model
--}
-type alias Model =
-    { currentPage : Page
-    , store : Store
-    }
-
-
 type alias Store =
     { user : Maybe User
     , tags : WebData (List String)
+    , login : WebData User
     }
 
 
@@ -37,7 +30,7 @@ type alias User =
     { email : String
     , token : String
     , username : String
-    , bio : String
+    , bio : Maybe String
     , image : Maybe String
     }
 
@@ -48,7 +41,7 @@ userDecoder =
         |> required "email" string
         |> required "token" string
         |> required "username" string
-        |> required "bio" string
+        |> required "bio" (maybe string)
         |> required "image" (maybe string)
 
 
@@ -64,7 +57,7 @@ userEncoder user =
         [ ( "email", JE.string user.email )
         , ( "token", JE.string user.token )
         , ( "username", JE.string user.username )
-        , ( "bio", JE.string user.bio )
+        , ( "bio", Utils.maybe JE.string user.bio )
         , ( "image", Utils.maybe JE.string user.image )
         ]
 

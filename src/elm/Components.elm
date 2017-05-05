@@ -12,7 +12,7 @@ avatarImageSrc =
     src << (Maybe.withDefault "https://static.productionready.io/images/smiley-cyrus.jpg")
 
 
-navBar : Model -> Html msg
+navBar : { c | store : Store, currentPage : Page } -> Html msg
 navBar { store, currentPage } =
     let
         navLinkClass page =
@@ -21,14 +21,16 @@ navBar { store, currentPage } =
             else
                 "nav-link"
 
+        navItem item =
+            li [ class "nav-item" ] [ item ]
+
         headerLink page message icon =
-            li [ class "nav-item" ]
-                [ a [ class (navLinkClass page), href (toUrl page) ]
+            navItem <|
+                a [ class (navLinkClass page), href (toUrl page) ]
                     [ i [ class <| Maybe.withDefault "" icon ]
                         []
                     , text message
                     ]
-                ]
 
         links =
             case store.user of
@@ -40,12 +42,13 @@ navBar { store, currentPage } =
 
                 Just user ->
                     [ headerLink Home "Home" Nothing
-                    , headerLink Editor "&nbsp;New Post" (Just "ion-compose")
-                    , headerLink Settings "&nbsp;Settings" (Just "ion-gear-a")
-                    , a [ class "nav-link", href (userLink user) ]
-                        [ img [ avatarImageSrc user.image, class "user-pic" ] []
-                        , text user.username
-                        ]
+                    , headerLink Editor "New Post" (Just "ion-compose")
+                    , headerLink Settings "Settings" (Just "ion-gear-a")
+                    , navItem <|
+                        a [ class "nav-link", href (userLink user) ]
+                            [ img [ avatarImageSrc user.image, class "user-pic" ] []
+                            , text user.username
+                            ]
                     ]
     in
         nav [ class "navbar navbar-light" ]

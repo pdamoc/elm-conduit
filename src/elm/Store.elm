@@ -4,6 +4,7 @@ import Types exposing (..)
 import RemoteData.Http exposing (..)
 import RemoteData exposing (..)
 import Json.Decode exposing (..)
+import Json.Encode as JE
 import Ports
 
 
@@ -11,6 +12,7 @@ init : Value -> Store
 init value =
     { user = parseUser value
     , tags = NotAsked
+    , login = NotAsked
     }
 
 
@@ -27,16 +29,56 @@ api path =
 type Msg
     = HandleTags (WebData (List String))
     | UpdateUser (Maybe User)
+    | HandleLogin (WebData User)
+    | Login String String
 
 
-update : Msg -> Store -> Store
-update msg store =
+update :
+    (Msg -> msg)
+    -> Msg
+    -> { m | store : Store }
+    -> ( { m | store : Store }, Cmd msg, Maybe Page )
+update tagger msg ({ store } as mainmodel) =
     case msg of
         HandleTags tags ->
-            { store | tags = tags }
+            ( { mainmodel | store = { store | tags = tags } }
+            , Cmd.none
+            , Nothing
+            )
+
+        HandleLogin login ->
+            case login of
+                Success user ->
+                    ( { mainmodel | store = { store | user = Just user } }
+                    , Cmd.none
+                    , Just Home
+                    )
+
+                _ ->
+                    ( mainmodel, Cmd.none, Nothing )
 
         UpdateUser user ->
-            { store | user = user }
+            ( { mainmodel | store = { store | user = user } }
+            , Cmd.none
+            , Nothing
+            )
+
+        Login email pass ->
+            let
+                body =
+                    JE.object
+                        [ ( "user"
+                          , JE.object
+                                [ ( "email", JE.string email )
+                                , ( "password", JE.string pass )
+                                ]
+                          )
+                        ]
+            in
+                ( { mainmodel | store = { store | login = Loading } }
+                , post (api "/users/login") (tagger << HandleLogin) (field "user" userDecoder) body
+                , Nothing
+                )
 
 
 tagsDecoder : Decoder (List String)
@@ -49,6 +91,11 @@ getTags tagger store =
     ( { store | tags = Loading }
     , get (api "/tags") (tagger << HandleTags) tagsDecoder
     )
+
+
+login : (Msg -> msg) -> String -> String -> msg
+login tagger email pass =
+    tagger (Login email pass)
 
 
 loadPage : (Msg -> msg) -> Page -> Store -> ( Store, Cmd msg )

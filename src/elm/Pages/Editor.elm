@@ -6,10 +6,10 @@ import Components exposing (..)
 import Types exposing (..)
 
 
-view : Model -> Html msg
-view model =
+view : { c | store : Store, currentPage : Page } -> Html msg
+view cfg =
     div []
-        [ navBar model
+        [ navBar cfg
         , editorPage
         , footer_
         ]

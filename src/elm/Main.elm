@@ -31,7 +31,7 @@ import Pages.Error
 -- APP
 
 
-main : Program Value Model Msg
+main : Program Value MainModel Msg
 main =
     Navigation.programWithFlags UrlChange
         { init = init
@@ -45,7 +45,16 @@ main =
 -- MODEL
 
 
-init : Value -> Location -> ( Model, Cmd Msg )
+{-| The Main Model
+-}
+type alias MainModel =
+    { currentPage : Page
+    , store : Store
+    , pageLogin : Pages.Login.Model
+    }
+
+
+init : Value -> Location -> ( MainModel, Cmd Msg )
 init userValue location =
     let
         currentPage =
@@ -57,6 +66,7 @@ init userValue location =
         initModel =
             { currentPage = currentPage
             , store = initStore
+            , pageLogin = Pages.Login.init
             }
     in
         ( initModel, cmds )
@@ -69,9 +79,10 @@ init userValue location =
 type Msg
     = UrlChange Location
     | UpdateStore Store.Msg
+    | PageLoginMsg Pages.Login.Msg
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> MainModel -> ( MainModel, Cmd Msg )
 update msg model =
     case msg of
         UrlChange location ->
@@ -85,21 +96,35 @@ update msg model =
                 ( { model | currentPage = page, store = newStore }, cmds )
 
         UpdateStore storeMsg ->
-            ( { model | store = Store.update storeMsg model.store }, Cmd.none )
+            case Store.update UpdateStore storeMsg model of
+                ( newModel, cmds, Nothing ) ->
+                    ( newModel, cmds )
+
+                ( newModel, cmds, Just page ) ->
+                    ( newModel, Navigation.newUrl (toUrl page) )
+
+        PageLoginMsg pMsg ->
+            Pages.Login.update pMsg model
 
 
 
 -- VIEW
 
 
-view : Model -> Html Msg
+view : MainModel -> Html Msg
 view model =
     case model.currentPage of
         Home ->
             Pages.Home.view model
 
         Login ->
-            Pages.Login.view model
+            Pages.Login.view
+                { tagger = PageLoginMsg
+                , store = model.store
+                , currentPage = model.currentPage
+                , login = Store.login UpdateStore
+                , model = model.pageLogin
+                }
 
         Register ->
             Pages.Register.view model
@@ -111,13 +136,13 @@ view model =
             Pages.Settings.view model
 
         Error loc ->
-            Pages.Error.view model (toString loc)
+            Pages.Error.view (toString loc)
 
 
 
 -- SUBSCRIPTION
 
 
-subscriptions : Model -> Sub Msg
+subscriptions : MainModel -> Sub Msg
 subscriptions model =
     Store.subscription UpdateStore
