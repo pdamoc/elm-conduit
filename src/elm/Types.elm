@@ -16,6 +16,7 @@ type Page
     | Register
     | Editor
     | Settings
+    | ProfilePage String
     | Error Location
 
 

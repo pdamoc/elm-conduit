@@ -25,6 +25,7 @@ import Pages.Login
 import Pages.Register
 import Pages.Editor
 import Pages.Settings
+import Pages.Profile
 import Pages.Error
 
 
@@ -136,6 +137,9 @@ view model =
 
         Settings ->
             Pages.Settings.view model
+
+        ProfilePage username ->
+            Pages.Profile.view model
 
         Error loc ->
             Pages.Error.view (toString loc)

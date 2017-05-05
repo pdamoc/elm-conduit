@@ -1,8 +1,9 @@
 module Router exposing (..)
 
-import UrlParser as Url exposing ((</>), (<?>), s, int, string, top)
+import UrlParser as Url exposing ((</>), (<?>), s, int, string, top, custom, Parser)
 import Types exposing (..)
 import Navigation exposing (Location)
+import String
 
 
 toUrl : Page -> String
@@ -23,6 +24,9 @@ toUrl page =
         Settings ->
             "settings"
 
+        ProfilePage username ->
+            "@" ++ username
+
         Error loc ->
             "error"
     )
@@ -42,7 +46,18 @@ route =
         , Url.map Register (s "register")
         , Url.map Editor (s "editor")
         , Url.map Settings (s "settings")
+        , Url.map ProfilePage username
         ]
+
+
+username : Parser (String -> a) a
+username =
+    custom "USERNAME" <|
+        \segment ->
+            if String.startsWith "@" segment then
+                Ok (String.dropLeft 1 segment)
+            else
+                Err "Not a Username"
 
 
 parse : Location -> Page
