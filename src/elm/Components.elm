@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Types exposing (..)
 import Router exposing (toUrl, userLink)
 import RemoteData exposing (..)
+import Store
 
 
 avatarImageSrc : Maybe String -> Attribute msg
@@ -114,3 +115,27 @@ box className =
 row : List (Html msg) -> Html msg
 row =
     box "row"
+
+
+authGuard : Store -> Html msg -> Html msg
+authGuard store html =
+    if Store.isAuthenticated store then
+        html
+    else
+        errorPage "Unauthorized Access" "You need to be authenticated to view this page. Please Sign in! "
+
+
+errorPage : String -> String -> Html msg
+errorPage title err =
+    box "container page"
+        [ box "row"
+            [ box "col-md-8 offset-md-2 col-xs-12"
+                [ h1
+                    [ class "text-xs-center" ]
+                    [ text title ]
+                , div
+                    [ class "error-messages" ]
+                    [ text err ]
+                ]
+            ]
+        ]

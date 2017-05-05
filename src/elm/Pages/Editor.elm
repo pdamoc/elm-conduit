@@ -7,10 +7,10 @@ import Types exposing (..)
 
 
 view : { c | store : Store, currentPage : Page } -> Html msg
-view cfg =
+view props =
     div []
-        [ navBar cfg
-        , editorPage
+        [ navBar props
+        , authGuard props.store editorPage
         , footer_
         ]
 

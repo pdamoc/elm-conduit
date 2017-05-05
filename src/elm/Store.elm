@@ -116,6 +116,20 @@ loadPage tagger page store =
 
 
 
+-- Interrogation functions
+
+
+isAuthenticated : Store -> Bool
+isAuthenticated store =
+    case store.user of
+        Nothing ->
+            False
+
+        Just _ ->
+            True
+
+
+
 -- Ports Interaction
 
 
