@@ -101,7 +101,9 @@ update msg model =
                     ( newModel, cmds )
 
                 ( newModel, cmds, Just page ) ->
-                    ( newModel, Navigation.newUrl (toUrl page) )
+                    ( newModel
+                    , Cmd.batch [ Store.updateUser newModel.store, Navigation.newUrl (toUrl page) ]
+                    )
 
         PageLoginMsg pMsg ->
             Pages.Login.update pMsg model

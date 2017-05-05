@@ -109,6 +109,20 @@ loadPage tagger page store =
 
 
 
+-- Ports Interaction
+
+
+updateUser : Store -> Cmd msg
+updateUser store =
+    case store.user of
+        Nothing ->
+            Cmd.none
+
+        Just user ->
+            Ports.saveUser (userEncoder user)
+
+
+
 -- Subscription
 
 
