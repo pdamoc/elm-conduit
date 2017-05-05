@@ -20,4 +20,7 @@ window.addEventListener('storage', function (event) {
  if (event.key == 'elm-conduit-user') {
     app.ports.userUpdates.send(JSON.parse(event.newValue)); 
   }
+ if (event.key == null) {
+    app.ports.userUpdates.send("{}"); 
+  }
 });

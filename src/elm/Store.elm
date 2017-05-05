@@ -33,11 +33,18 @@ type Msg
     | Login String String
 
 
+type alias MainModel m =
+    { m
+        | store : Store
+        , currentPage : Page
+    }
+
+
 update :
     (Msg -> msg)
     -> Msg
-    -> { m | store : Store }
-    -> ( { m | store : Store }, Cmd msg, Maybe Page )
+    -> MainModel m
+    -> ( MainModel m, Cmd msg, Maybe Page )
 update tagger msg ({ store } as mainmodel) =
     case msg of
         HandleTags tags ->
