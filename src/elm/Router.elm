@@ -27,6 +27,9 @@ toUrl page =
         ProfilePage username ->
             "@" ++ username
 
+        ArticlePage slug ->
+            "article/" ++ slug
+
         Error loc ->
             "error"
     )
@@ -47,6 +50,7 @@ route =
         , Url.map Editor (s "editor")
         , Url.map Settings (s "settings")
         , Url.map ProfilePage username
+        , Url.map ArticlePage (s "article" </> string)
         ]
 
 

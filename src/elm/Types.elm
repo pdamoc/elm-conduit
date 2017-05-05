@@ -17,6 +17,7 @@ type Page
     | Editor
     | Settings
     | ProfilePage String
+    | ArticlePage String
     | Error Location
 
 

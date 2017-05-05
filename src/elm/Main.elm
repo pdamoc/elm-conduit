@@ -26,6 +26,7 @@ import Pages.Register
 import Pages.Editor
 import Pages.Settings
 import Pages.Profile
+import Pages.Article
 import Pages.Error
 
 
@@ -140,6 +141,9 @@ view model =
 
         ProfilePage username ->
             Pages.Profile.view model
+
+        ArticlePage slug ->
+            Pages.Article.view model
 
         Error loc ->
             Pages.Error.view (toString loc)

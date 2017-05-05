@@ -15,7 +15,7 @@ view props =
         ]
 
 
-profilePage : a -> Html msg
+profilePage : Store -> Html msg
 profilePage store =
     div
         [ class "profile-page" ]
